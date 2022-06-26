@@ -228,7 +228,6 @@ public class MainFrame extends JFrame {
 				if (check == true) {
 					new SortFrame(array, "Quick Sort");
 				}
-				
 			}
 		});
 		btnQuickSort.setFont(new Font("Tahoma", Font.PLAIN, 18));

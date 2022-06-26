@@ -3,6 +3,7 @@ package t4;
 import t1.Instruction;
 import t3.SortCanvas;
 import t3.SortFrame;
+import t4.SortVisualizer.ColorManager;
 
 public class QuickSortVisualizer extends SortVisualizer{
 
@@ -16,69 +17,91 @@ public class QuickSortVisualizer extends SortVisualizer{
 	{
 		pause();
 		g = bs.getDrawGraphics();
-		quickSort(0, array.length - 1);
+		quicksort(0, array.length - 1);
 		finishAnimation();
+		renderI(3,"Thuật toán kết thúc!!!");
+		bs.show();
 		g.dispose();
 	}
 	// recursive quick sort
-	private void quickSort(int start, int end)
-	{
-		if (start <= end)
-		{
-			// place pivot in correct spot
-			int pivot = partition(start, end);
+	int partition(int low, int high) {
+		renderI(1,"Trong mảng từ array["+low+"]= "+array[low]+" đến array["+high+"]= "+array[high]+" chọn array["+high+"] làm chốt");
+		renderI(0,"Đặt chỉ số của phần tử nhỏ hơn ban đầu là i= "+(low-1));
+        int pivot = array[high];
+        colorPair(low,high,ColorManager.BAR_RED);
+        instructions[1].clear(g);
+        instructions[0].clear(g);
+        bs.show();
+        int i = (low - 1); // index of smaller element
+        for (int j = low; j < high; j++) {
+        	renderI(2,"So sánh  array["+j+"] ="+array[j]+" và chốt = "+array[high]);
+        	colorPair(j,high,ColorManager.BAR_ORANGE);
+        	instructions[2].clear(g);
+        	bs.show();
+            // Nếu phần tử hiện tại nhỏ hơn chốt
+            if (array[j] < pivot) {
+                i++;
+                swap(i,j);
+                renderI(2,"Đổi chỗ  array["+j+"] ="+array[j]+" và array["+i+"]= "+array[i]+" , i="+i);
+                colorPair(j,i,ColorManager.BAR_GREEN);
+                instructions[2].clear(g);
+                // swap arr[i] và arr[j]
+            }
 
-			// sort the left half
-			quickSort(start, pivot-1);
+        }
 
-			// sort the right half
-			quickSort(pivot+1, end);
-		}
-	}
-
-
-	// quick sort partition
-	private int partition(int l, int r)
-	{
-		int pivotIndex = l;
-		renderBar(bars[pivotIndex], ColorManager.BAR_YELLOW);
-		pause();
-		int storeIndex = l + 1;
-	    for (int i = l + 1; i <= r; i++) {
-	    	renderBar(bars[i], ColorManager.BAR_RED);
-	    	bars[i].setColor(ColorManager.BAR_BLUE);
-	    	if (array[i] < array[pivotIndex]) {
-	    		pause();
-	    		swap(i, storeIndex);
-	    		renderBar(bars[storeIndex], ColorManager.BAR_GREEN);
-	    		pause();
-	    		storeIndex ++;
-	    		continue;
-	    	}
-	    	pause();
-	    	
-	    	renderBar(bars[i], ColorManager.BAR_BLUE);
-	    }
-	    int newPivotIndex = storeIndex - 1;
-	    pause();
-		bars[pivotIndex].setColor(ColorManager.BAR_GREEN);
-		bars[newPivotIndex].setColor(ColorManager.BAR_YELLOW);
-	    swap(pivotIndex, newPivotIndex);
-		bars[newPivotIndex].setColor(ColorManager.BAR_ORANGE);
-	    pause();
-	    for (int i = l; i <= r; i++) {
-	    	if (i != newPivotIndex) {
-	    		bars[i].setColor(ColorManager.BAR_CYAN);
-	    	}
-	    	bars[i].draw(g);
-	    }
-	    bs.show();
-	    pause();
-
-		return newPivotIndex;
-	}
-	
+        // swap arr[i+1] và arr[high] (hoặc pivot)
+        swap(i+1,high);
+        return i + 1;
+    }
+    // arr[] --> Mảng cần được sắp xếp,
+    // low --> chỉ mục bắt đầu,
+    // high --> chỉ mục kết thúc
+    void quicksort(int low, int high) {
+        if (low < high) {
+            // pi là chỉ mục của chốt, arr[pi] vị trí của chốt
+            int pi = partition(low, high);
+            // Sắp xếp đệ quy các phần tử
+            // trướcphân vùng và sau phân vùng
+            quicksort(low, pi - 1);
+            quicksort(pi + 1, high);
+        }
+    }
 	@Override
-	public void renderInstructionSet() {
+		public void renderInstructionSet() {
+			int x = PADDING;
+			int y = canvasHeight - 250 - PADDING;
+			int instruction_width = 700;
+			instructions = new Instruction[4];
+			instructions[0] = new Instruction(x+180, y+30, instruction_width, 0);
+			instructions[1] = new Instruction(x+50, y , instruction_width, 1);
+			instructions[2] = new Instruction(x+170, y , instruction_width, 2);
+			instructions[3] = new Instruction(x+250, y , instruction_width, 3);
+		}
+	public void renderNote() {
+		g = bs.getDrawGraphics();
+		int x = PADDING;
+		int y = canvasHeight - 250 - PADDING;
+		instructions1 = new Instruction[6];
+		instructions1[0] = new Instruction(x, y+200, 34, 0);
+		instructions1[1] = new Instruction(x, y+160, 34, 0);
+		instructions1[2] = new Instruction(x, y+120, 34, 0);
+		instructions1[0].setColor(ColorManager.BAR_GREEN);
+		instructions1[1].setColor(ColorManager.BAR_RED);
+		instructions1[2].setColor(ColorManager.BAR_ORANGE);
+		instructions1[0].drawN(g);
+		instructions1[1].drawN(g);
+		instructions1[2].drawN(g);
+		instructions1[3]= new Instruction(x+50, y+206, 34, 0);
+		instructions1[4]= new Instruction(x+50, y+166, 34, 0);
+		instructions1[5]= new Instruction(x+50, y+126, 34, 0);
+		instructions1[3].setInstruction("   Đổi chỗ hai phần tử");
+		instructions1[4].setInstruction("   Hai phần tử đầu ,cuối của mảng đã chọn");
+		instructions1[5].setInstruction("   So sánh hai phần tử");
+		instructions1[3].drawM(g);
+		instructions1[4].drawM(g);
+		instructions1[5].drawM(g);
+		bs.show();
+		g.dispose();
 	}
 }

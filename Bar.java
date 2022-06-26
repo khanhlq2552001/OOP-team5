@@ -17,13 +17,11 @@ public class Bar {
 		this.value = value;
 		this.color = color;
 	}
-
-
 	public void draw(Graphics g)
 	{
 		g.setColor(color);
-		g.fillRect(x + MARGIN, y-(value*10), width - MARGIN * 2, value * 10);
-		g.setColor(Color.BLACK);
+		g.fillRect(x + MARGIN, y-(value*10), width - MARGIN * 2, value*10);
+		g.setColor(Color.black);
 		g.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		int bottom_margin = 0;
 		if (value < 4) {
@@ -38,13 +36,11 @@ public class Bar {
 		}
 		g.drawString(valueString, x + MARGIN + padding, y - bottom_margin - 7);
 	}
-
-
 	public void clear(Graphics g)
 	{
 		// clear the space
 		g.setColor(new Color(249, 249, 249));
-		g.fillRect(x + MARGIN, y-(25*10), width - MARGIN * 2, 25 * 10);
+		g.fillRect(x + MARGIN, y-(25*10), width - MARGIN * 2, 30*10);
 	}
 
 

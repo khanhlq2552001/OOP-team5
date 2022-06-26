@@ -2,7 +2,6 @@ package t4;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
-
 import t1.Bar;
 import t1.Instruction;
 import t3.SortCanvas;
@@ -11,12 +10,14 @@ public abstract class SortVisualizer {
 	protected static final int PADDING = 20;
 	protected int[] array;
 	protected int size;
-	protected int speed = 100;
+	protected int speed = 500;
 	protected Bar[] bars;
 	protected Instruction[] instructions;
+	protected Instruction[] instructions1;
 	protected boolean hasArray = false;
 	protected BufferStrategy bs;
 	protected Graphics g;
+	protected SortCanvas sortCanvas;
 	protected SortFrame sortFrame;
 	protected Color originalColor, swappingColor, comparingColor;
 	protected int canvasWidth, canvasHeight;
@@ -32,10 +33,7 @@ public abstract class SortVisualizer {
 		public static Color BAR_YELLOW = new Color(251, 238, 125);
 		public static Color BAR_ORANGE = new Color(255, 177, 51);
 		public static Color BAR_GREEN = new Color(118, 244, 118);
-
 	}
-
-	
 	public SortVisualizer(SortCanvas sortCanvas, SortFrame sortFrame, int array[]) {
 		this.sortFrame = sortFrame;
 		bs = sortFrame.getBufferStrategy();
@@ -49,24 +47,28 @@ public abstract class SortVisualizer {
 		renderArray();	
 		renderInstructionSet();
 	}
-	
-	
 	public void setContinue(boolean isContinue) {
 		this.isContinue = isContinue;
 	}
-
-
+	public void setBars(Bar bar,int value) {
+		bar.clear(g);
+		bar.setValue(value);
+		bar.draw(g);
+	}
 	public void renderBar(Bar bar, Color color) {
 		bar.setColor(color);
 		bar.draw(g);
 		bs.show();
-		
 	}
-	public void renderArray()
+	public void renderI(int i,String instruction) {
+		instructions[i].setInstruction(instruction);
+		instructions[i].draw(g);
+		bs.show();
+	}
+    public void renderArray()
 	{
 		bars = new Bar[size];
 		hasArray = true;
-
 		// initial position
 		int x = PADDING;
 		int y = canvasHeight - 300 - PADDING;
@@ -87,7 +89,6 @@ public abstract class SortVisualizer {
 			bar = new Bar((int)x, y, (int) width, value, originalColor);
 			bar.draw(g);
 			bars[i] = bar;
-
 			// move to the next bar
 			x += width;
 		}
@@ -100,6 +101,7 @@ public abstract class SortVisualizer {
 	
 	public abstract void renderInstructionSet();
 	
+	public abstract void renderNote();
 	
 	public void drawArray()
 	{
@@ -112,21 +114,10 @@ public abstract class SortVisualizer {
 		{
 			bars[i].draw(g);
 		}
-		if (instructions != null) {
-			for (int i = 0; i < instructions.length; i++) {
-				instructions[i].draw(g);
-			}			
-		}
+
 		bs.show();
 		g.dispose();
 	}
-
-	public void unhighlightIntructions() {
-		for (int i = 0; i < instructions.length; i++) {
-			instructions[i].unhightlight(g);
-		}
-	}
-		
 	public void pause() {
 		if (!isContinuous) {
 			while (!isContinue) {
@@ -153,20 +144,16 @@ public abstract class SortVisualizer {
 		int temp = array[j];
 		array[j] = array[i];
 		array[i] = temp;
-
 		// clear the bar
 		bars[i].clear(g);
 		bars[j].clear(g);
-
 		// swap the drawings
 		bars[j].setValue(bars[i].getValue());
 		bars[i].setValue(temp);
 		bars[i].draw(g);
 		bars[j].draw(g);
-
 		bs.show();
 	}
-
 
 	protected void colorPair(int i, int j, Color color)
 	{
@@ -174,30 +161,32 @@ public abstract class SortVisualizer {
 		// drawing
 		bars[i].setColor(color);
 		bars[i].draw(g);
-
 		bars[j].setColor(color);
 		bars[j].draw(g);
-
 		bs.show();
-
 		pause();
-
 		recoverColor(i, j, color1, color2);
-		
 	}
-	
-	
-	
+	protected void colorPair(int i,Color color) {
+		Color color1= bars[i].getColor();
+		bars[i].setColor(color);
+		bars[i].draw(g);
+		bs.show();
+		pause();
+		recoverColor(i,color1);
+	}
 	protected void recoverColor(int i, int j, Color color1, Color color2) {
 		bars[i].setColor(color1);
 		bars[i].draw(g);
-
 		bars[j].setColor(color2);
 		bars[j].draw(g);
-
 		bs.show();
 	}
-	
+	protected void recoverColor(int i,Color color1) {
+		bars[i].setColor(color1);
+		bars[i].draw(g);
+		bs.show();
+	}
 	protected Color getBarColor(int value)
 	{
 		return ColorManager.BAR_ORANGE;
@@ -213,7 +202,6 @@ public abstract class SortVisualizer {
 			bars[i].draw(g);
 			bs.show();
 		}
-		
 		sortFrame.setBtnPlayText("Play");
 		isContinuous = false;		
 	}
@@ -229,9 +217,7 @@ public abstract class SortVisualizer {
 		bar.setColor(color);
 		bar.draw(g);
 		bs.show();
-
 		pause();
-		
 		bar.setColor(oldColor);
 		bar.draw(g);
 

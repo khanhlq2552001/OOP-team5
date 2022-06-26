@@ -9,6 +9,7 @@ import java.awt.image.BufferStrategy;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -16,6 +17,7 @@ import javax.swing.border.LineBorder;
 import t4.BubbleSortVisualizer;
 import t4.HeapSortVisualizer;
 import t4.QuickSortVisualizer;
+import t4.RadixSortVisualizer;
 import t4.SortVisualizer;
 
 public class SortFrame extends JFrame{
@@ -65,26 +67,29 @@ public class SortFrame extends JFrame{
 			sortVisualizer = new QuickSortVisualizer(sortCanvas, this, array);			
 			break;
 		}
-		case"Heap Sort":{
-			sortVisualizer = new HeapSortVisualizer(sortCanvas,this,array);
+		case "Heap Sort":{
+			sortVisualizer = new HeapSortVisualizer(sortCanvas, this, array);
+			break;
+		}
+		case "Radix Sort": {
+			sortVisualizer = new RadixSortVisualizer(sortCanvas,this, array);
+			break;
 		}
 		default:
 			break;
 		}
-		
 		JButton btnStart = new JButton("Start");
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				threadSort = new Thread() {
 					@Override
 					public void run() {
-						sortVisualizer.sort();					
+						sortVisualizer.sort();		
 					}
 				};
 				threadSort.start();
 			}
 		});
-		
 		btnStart.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		btnStart.setBounds(30, 680, 127, 34);
 		contentPane.add(btnStart);
@@ -136,14 +141,18 @@ public class SortFrame extends JFrame{
 		setVisible(true);
 	
 	}
+
 	public void setBtnPlayText(String btnPlayStr) {
 		this.btnPlay.setText(btnPlayStr);
 	}
 	
 	public void onDrawArray()
 	{
-		if (sortVisualizer != null)
+		if (sortVisualizer != null) {
 			sortVisualizer.drawArray();
+			sortVisualizer.renderNote();
+		}
+		
 	}
 	
 	public BufferStrategy getBufferStrategy()
